@@ -7,3 +7,5 @@ P
  contracts/automated-billing.clar,6/7/6738f7e63f0be1fbaf93164f639825cd30647b70
 O
 tests/automated-billing.test.ts,6/2/62bbf651bb26de3f70b373765f5b7f2aefb16dc3
+M
+contracts/grid-balancing.clar,6/6/66fda8f28b67d55ed4e62fdd99e5434482205427
