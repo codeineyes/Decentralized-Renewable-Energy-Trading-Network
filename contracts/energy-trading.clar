@@ -1,30 +1,46 @@
+;; Energy Trading Contract
 
-;; title: energy-trading
-;; version:
-;; summary:
-;; description:
+(define-non-fungible-token energy-credit uint)
 
-;; traits
-;;
+(define-map energy-balances principal uint)
+(define-map energy-prices principal uint)
 
-;; token definitions
-;;
+(define-data-var credit-id-nonce uint u0)
 
-;; constants
-;;
+(define-public (produce-energy (amount uint))
+    (let
+        ((new-id (+ (var-get credit-id-nonce) u1))
+         (current-balance (default-to u0 (map-get? energy-balances tx-sender))))
+        (try! (nft-mint? energy-credit new-id tx-sender))
+        (map-set energy-balances tx-sender (+ current-balance amount))
+        (var-set credit-id-nonce new-id)
+        (ok new-id)
+    )
+)
 
-;; data vars
-;;
+(define-public (set-energy-price (price-per-unit uint))
+    (begin
+        (map-set energy-prices tx-sender price-per-unit)
+        (ok true)
+    )
+)
 
-;; data maps
-;;
+(define-public (transfer-energy (recipient principal) (amount uint))
+    (let
+        ((sender-balance (default-to u0 (map-get? energy-balances tx-sender)))
+         (recipient-balance (default-to u0 (map-get? energy-balances recipient))))
+        (asserts! (>= sender-balance amount) (err u401))
+        (map-set energy-balances tx-sender (- sender-balance amount))
+        (map-set energy-balances recipient (+ recipient-balance amount))
+        (ok true)
+    )
+)
 
-;; public functions
-;;
+(define-read-only (get-energy-balance (user principal))
+    (ok (default-to u0 (map-get? energy-balances user)))
+)
 
-;; read only functions
-;;
-
-;; private functions
-;;
+(define-read-only (get-energy-price (user principal))
+    (ok (default-to u0 (map-get? energy-prices user)))
+)
 
